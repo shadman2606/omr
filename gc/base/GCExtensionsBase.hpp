@@ -1533,7 +1533,8 @@ public:
 		, oldHeapSizeOnLastGlobalGC(UDATA_MAX)
 		, freeOldHeapSizeOnLastGlobalGC(UDATA_MAX)
 		, concurrentKickoffTenuringHeadroom((float)-1) /* Negative value indicates it was not specified by a command line option */
-		, tenureBytesDeviationBoost((float)2)
+		//, tenureBytesDeviationBoost((float)2)
+		, tenureBytesDeviationBoost((float)0)
 #endif /* defined(OMR_GC_MODRON_SCAVENGER) */
 #if defined(OMR_GC_REALTIME)
 		, sATBBarrierRememberedSet(NULL)
@@ -1701,9 +1702,11 @@ public:
 		, cacheListSplitForced(false)
 #if defined(OMR_GC_CONCURRENT_SCAVENGER)
 		, softwareRangeCheckReadBarrier(false)
-		, softwareRangeCheckReadBarrierForced(false)
+		//, softwareRangeCheckReadBarrierForced(false)
+		, softwareRangeCheckReadBarrierForced(true)
 		, concurrentScavenger(false)
-		, concurrentScavengerForced(false)
+		//, concurrentScavengerForced(false)
+		, concurrentScavengerForced(true)
 		, concurrentScavengerHWSupport(false)
 		, concurrentScavengerBackgroundThreads(1)
 		, concurrentScavengerBackgroundThreadsForced(false)

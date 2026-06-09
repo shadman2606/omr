@@ -637,12 +637,6 @@ MM_ParallelGlobalGC::shouldCompactThisCycle(MM_EnvironmentBase *env, MM_Allocate
 		goto compactionReqd;
 	}
 
-	/* Aborted CS needs global GC with Nursery compaction */
-	if (_extensions->isConcurrentScavengerEnabled() && _extensions->isScavengerBackOutFlagRaised()) {
-		compactReason = COMPACT_ABORTED_SCAVENGE;
-		goto compactionReqd;
-	}	
-
 	/* Is this a system GC ? */ 
 	if(gcCode.isExplicitGC()) { 
 		/* If the user as specified -XcompactexplicitGC then compact*/
@@ -800,6 +794,11 @@ MM_ParallelGlobalGC::shouldCompactThisCycle(MM_EnvironmentBase *env, MM_Allocate
 		}
 	}
 
+	/* Aborted CS needs global GC with Nursery compaction */
+	if (_extensions->isConcurrentScavengerEnabled() && _extensions->isScavengerBackOutFlagRaised()) {
+		compactReason = COMPACT_ABORTED_SCAVENGE;
+		goto compactionReqd;
+	}
 	
 nocompact:	
 	/* Compaction not required or prevented from running */

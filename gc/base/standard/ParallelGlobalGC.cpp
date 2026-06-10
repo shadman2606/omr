@@ -601,6 +601,8 @@ MM_ParallelGlobalGC::mainThreadGarbageCollect(MM_EnvironmentBase *env, MM_Alloca
 bool
 MM_ParallelGlobalGC::shouldCompactThisCycle(MM_EnvironmentBase *env, MM_AllocateDescription *allocDescription, uintptr_t activeSubspaceMaxExpansionInSpace, MM_GCCode gcCode) 
 {
+	OMRPORT_ACCESS_FROM_OMRPORT(env->getPortLibrary());
+	omrtty_printf("SHADMAN shouldCompactThisCycle\n");
 	MM_Heap *heap = _extensions->heap;
 	MM_AllocationStats *allocStats = &_extensions->allocationStats;
 	CompactReason compactReason = COMPACT_NONE;
@@ -804,6 +806,7 @@ MM_ParallelGlobalGC::shouldCompactThisCycle(MM_EnvironmentBase *env, MM_Allocate
 	
 nocompact:	
 	/* Compaction not required or prevented from running */
+	omrtty_printf("SHADMAN nocompact compactReason=%zu compactPreventedReason=%zu\n", compactReason, compactPreventedReason);
 	_extensions->globalGCStats.compactStats._compactReason = compactReason;
 	_extensions->globalGCStats.compactStats._compactPreventedReason = compactPreventedReason;
 
@@ -817,6 +820,7 @@ compactionReqd:
 		goto nocompact;
 	}
 
+	omrtty_printf("SHADMAN compactionReqd compactReason=%zu compactPreventedReason=%zu\n", compactReason, compactPreventedReason);
 	_extensions->globalGCStats.compactStats._compactReason = compactReason;
 	_extensions->globalGCStats.compactStats._compactPreventedReason = compactPreventedReason;
 

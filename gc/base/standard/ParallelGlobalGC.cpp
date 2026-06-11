@@ -659,6 +659,7 @@ MM_ParallelGlobalGC::shouldCompactThisCycle(MM_EnvironmentBase *env, MM_Allocate
 		uintptr_t largestFreeEntry = memorySpace->findLargestFreeEntry(env, allocDescription);
 		uintptr_t bytesRequested = allocDescription->getBytesRequested();
 		
+		omrtty_printf("SHADMAN COMPACT_LARGE bytesRequested=%zu largestFreeEntry=%zu\n", bytesRequested, largestFreeEntry);
 		if(bytesRequested > largestFreeEntry){
 			compactReason = COMPACT_LARGE;
 			goto compactionReqd;
@@ -680,6 +681,7 @@ MM_ParallelGlobalGC::shouldCompactThisCycle(MM_EnvironmentBase *env, MM_Allocate
 			MM_AllocateDescription tenureAllocDescription(failedTenureLargest, OMR_GC_ALLOCATE_OBJECT_TENURED, false, true);
 			uintptr_t largestTenureFreeEntry = memorySpace->findLargestFreeEntry(env, &tenureAllocDescription);
 			
+			omrtty_printf("SHADMAN COMPACT_LARGE failedTenureLargest=%zu largestTenureFreeEntry=%zu\n", failedTenureLargest, largestTenureFreeEntry);
 			if(failedTenureLargest > largestTenureFreeEntry){
 				compactReason = COMPACT_LARGE;
 				goto compactionReqd;

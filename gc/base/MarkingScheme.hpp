@@ -233,6 +233,16 @@ public:
 	MMINLINE uintptr_t
 	scanObject(MM_EnvironmentBase *env, omrobjectptr_t objectPtr, MM_MarkingSchemeScanReason reason, uintptr_t sizeToDo = UDATA_MAX)
 	{
+#if defined(SHAD_UNIFY_SCAVENGE)
+		/* DEV: Same guard as the private scanObject — see MarkingScheme.cpp for rationale. */
+		if (shadUnifyEnabled && !_extensions->isConcurrentScavengerEnabled()) {
+			MM_ForwardedHeader forwardHeader(objectPtr, _extensions->compressObjectReferences());
+			if (forwardHeader.isForwardedPointer()) {
+				return sizeToDo;
+			}
+		}
+#endif /* SHAD_UNIFY_SCAVENGE */
+
 		GC_ObjectScannerState objectScannerState;
 		GC_ObjectScanner *objectScanner = _delegate.getObjectScanner(env, objectPtr, &objectScannerState, reason, &sizeToDo);
 		if (NULL != objectScanner) {

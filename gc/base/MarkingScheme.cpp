@@ -294,6 +294,27 @@ uintptr_t
 MM_MarkingScheme::scanObject(MM_EnvironmentBase *env, omrobjectptr_t objectPtr)
 {
 	uintptr_t sizeToDo = UDATA_MAX;
+
+#if defined(SHAD_UNIFY_SCAVENGE)
+	/* DEV: Under the unified STW abort path, a forwarded object can reach the work stack.
+	 * The slot pointing here was already updated by fixupForwardedSlot to the copy, so the
+	 * copy will be scanned via that slot. Skip the forwarded original to avoid crashing in
+	 * getObjectScanner on a forward-pointer header.
+	 * Self-forwarded objects are still in place — restore the header and scan normally.
+	 * Note: CS does not need this guard — its architecture prevents forwarded objects from
+	 * reaching completeScan as top-level scan targets. */
+	if (shadUnifyEnabled && !_extensions->isConcurrentScavengerEnabled()) {
+		MM_ForwardedHeader forwardHeader(objectPtr, _extensions->compressObjectReferences());
+		if (forwardHeader.isForwardedPointer()) {
+			if (forwardHeader.isSelfForwardedPointer()) {
+				forwardHeader.restoreSelfForwardedPointer();
+			} else {
+				return sizeToDo;
+			}
+		}
+	}
+#endif /* SHAD_UNIFY_SCAVENGE */
+
 	GC_ObjectScannerState objectScannerState;
 	GC_ObjectScanner *objectScanner = _delegate.getObjectScanner(env, objectPtr, &objectScannerState, SCAN_REASON_PACKET, &sizeToDo);
 	if (NULL != objectScanner) {
